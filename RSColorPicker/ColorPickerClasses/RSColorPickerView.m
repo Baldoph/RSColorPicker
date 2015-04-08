@@ -418,6 +418,7 @@
 	}
 
     CGPoint point = [touches.anyObject locationInView:self];
+	point = CGPointMake(point.x, point.y - 15);
     [self updateStateForTouchPoint:point];
 
     if ([self.delegate respondsToSelector:@selector(colorPicker:touchesBegan:withEvent:)]) {
@@ -427,12 +428,14 @@
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    CGPoint point = [[touches anyObject] locationInView:self];
+	CGPoint point = [touches.anyObject locationInView:self];
+	point = CGPointMake(point.x, point.y - 15);
     [self updateStateForTouchPoint:point];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    CGPoint point = [[touches anyObject] locationInView:self];
+	CGPoint point = [touches.anyObject locationInView:self];
+	point = CGPointMake(point.x, point.y - 15);
     [self updateStateForTouchPoint:point];
 
     [self.loupeLayer disappear];
