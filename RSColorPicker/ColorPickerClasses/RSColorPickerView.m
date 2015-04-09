@@ -90,7 +90,7 @@
 - (void)handleStateChanged;
 
 // Called to handle a state change (optionally disabling CA Actions for loupe).
-- (void)handleStateChangedDisableActions:(BOOL)disable;
+- (void)handleStateChangedDisableActions:(BOOL)disable tellDelegate:(BOOL)tell;
 
 // touch handling
 - (CGPoint)validPointForTouch:(CGPoint)touchPoint;
@@ -164,7 +164,7 @@
 
     [self.layer addSublayer:self.contentsLayer];
 
-    [self handleStateChangedDisableActions:NO];
+    [self handleStateChangedDisableActions:NO tellDelegate:YES];
 
     self.contentsLayer.masksToBounds = YES;
     self.cropToCircle = NO;
@@ -273,12 +273,12 @@
 
 - (void)setBrightness:(CGFloat)bright {
     state = [state stateBySettingBrightness:bright];
-    [self handleStateChanged];
+    [self handleStateChangedTellDelegate:YES];
 }
 
 - (void)setOpacity:(CGFloat)opacity {
     state = [state stateBySettingAlpha:opacity];
-    [self handleStateChanged];
+    [self handleStateChangedTellDelegate:YES];
 }
 
 - (void)setCropToCircle:(BOOL)circle {
@@ -297,16 +297,21 @@
 
 - (void)setSelectionColor:(UIColor *)selectionColor {
     state = [[RSColorPickerState alloc] initWithColor:selectionColor];
-    [self handleStateChanged];
+    [self handleStateChangedTellDelegate:NO];
 }
 
 #pragma mark - Selection Updates -
 
-- (void)handleStateChanged {
-    [self handleStateChangedDisableActions:YES];
+- (void)handleStateChanged
+{
+	[self handleStateChangedTellDelegate:NO];
 }
 
-- (void)handleStateChangedDisableActions:(BOOL)disable {
+- (void)handleStateChangedTellDelegate:(BOOL)tellDelegate {
+    [self handleStateChangedDisableActions:YES tellDelegate:tellDelegate];
+}
+
+- (void)handleStateChangedDisableActions:(BOOL)disable tellDelegate:(BOOL)tellDelegate {
     [CATransaction begin];
     [CATransaction setDisableActions: disable];
 
@@ -329,14 +334,14 @@
     [CATransaction commit];
 
     // notify delegate
-    if ([self.delegate respondsToSelector:@selector(colorPickerDidChangeSelection:)]) {
+    if (tellDelegate && [self.delegate respondsToSelector:@selector(colorPickerDidChangeSelection:)]) {
         [self.delegate colorPickerDidChangeSelection:self];
     }
 }
 
 - (void)updateStateForTouchPoint:(CGPoint)point {
     state = [self stateForPoint:[self validPointForTouch:point]];
-    [self handleStateChanged];
+    [self handleStateChangedTellDelegate:YES];
 }
 
 #pragma mark - Metrics -
