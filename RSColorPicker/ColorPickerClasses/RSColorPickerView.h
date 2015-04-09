@@ -49,7 +49,7 @@ IB_DESIGNABLE
 /**
  * The delegate
  */
-@property (nonatomic, weak) id <RSColorPickerViewDelegate> delegate;
+@property (nonatomic, weak) IBOutlet id <RSColorPickerViewDelegate> delegate;
 
 /**
  * The current point (in the color picker's bounds) of the selected color.
